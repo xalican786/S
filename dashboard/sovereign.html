@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOVEREIGN</title>
+<link rel="stylesheet" href="sovereign.css">
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="logo">SOVEREIGN</div>
+    <div class="status" id="status">CONNECTING...</div>
+    <div class="uptime" id="uptime">up: 0s</div>
+  </header>
+
+  <nav>
+    <button class="tab active" onclick="showTab('overview')">Overview</button>
+    <button class="tab" onclick="showTab('executor')">Executor</button>
+    <button class="tab" onclick="showTab('amplifier')">Amplifier</button>
+    <button class="tab" onclick="showTab('chains')">Chains</button>
+    <button class="tab" onclick="showTab('flash')">Flash</button>
+    <button class="tab" onclick="showTab('propeller')">Propeller</button>
+    <button class="tab" onclick="showTab('vault')">Vault</button>
+    <button class="tab" onclick="showTab('contracts')">Contracts</button>
+    <button class="tab" onclick="showTab('bundles')">Bundles</button>
+    <button class="tab" onclick="showTab('ftw')">FTW</button>
+  </nav>
+
+  <!-- OVERVIEW -->
+  <div id="tab-overview" class="tab-content active">
+    <div class="grid-3">
+      <div class="card">
+        <div class="label">Revenue Today</div>
+        <div class="value green" id="ov-rev">$0.00</div>
+      </div>
+      <div class="card">
+        <div class="label">All-Time Revenue</div>
+        <div class="value" id="ov-total">$0.00</div>
+      </div>
+      <div class="card">
+        <div class="label">Vault Balance</div>
+        <div class="value green" id="ov-vault">$0.00</div>
+      </div>
+    </div>
+    <div class="grid-3">
+      <div class="card">
+        <div class="label">Swaps Today</div>
+        <div class="value" id="ov-swaps">0</div>
+      </div>
+      <div class="card">
+        <div class="label">Qualifying Detected</div>
+        <div class="value" id="ov-natural">0</div>
+      </div>
+      <div class="card">
+        <div class="label">Propeller</div>
+        <div class="value" id="ov-prop">P1</div>
+      </div>
+    </div>
+    <div class="card full">
+      <div class="label">Daily Progress</div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="ov-progress" style="width:0%"></div>
+      </div>
+      <div class="progress-text" id="ov-progress-text">0% of daily target</div>
+    </div>
+  </div>
+
+  <!-- EXECUTOR -->
+  <div id="tab-executor" class="tab-content">
+    <div class="grid-2">
+      <div class="card">
+        <div class="label">Gas Price</div>
+        <div class="value" id="ex-gas">0 gwei</div>
+      </div>
+      <div class="card">
+        <div class="label">Gas Status</div>
+        <div class="value" id="ex-gasok">—</div>
+      </div>
+    </div>
+    <div class="grid-3">
+      <div class="card">
+        <div class="label">Executions Today</div>
+        <div class="value" id="ex-exec">0</div>
+      </div>
+      <div class="card">
+        <div class="label">Success Rate</div>
+        <div class="value green" id="ex-rate">0%</div>
+      </div>
+      <div class="card">
+        <div class="label">Avg Speed</div>
+        <div class="value" id="ex-speed">0ms</div>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="label">Peak Profit/Swap</div>
+        <div class="value" id="ex-peak">$0</div>
+      </div>
+      <div class="card">
+        <div class="label">Avg Profit/Swap</div>
+        <div class="value" id="ex-avg">$0</div>
+      </div>
+    </div>
+    <div class="card full controls">
+      <button onclick="pauseExec()" class="btn-danger">Pause Executor</button>
+      <button onclick="resumeExec()" class="btn-success">Resume Executor</button>
+    </div>
+  </div>
+
+  <!-- AMPLIFIER -->
+  <div id="tab-amplifier" class="tab-content">
+    <div class="card full">
+      <div class="label">Blended Extraction Rate</div>
+      <div class="value green" id="amp-blended">0%</div>
+    </div>
+    <div id="amp-layers" class="layers-grid"></div>
+  </div>
+
+  <!-- CHAINS -->
+  <div id="tab-chains" class="tab-content">
+    <div class="card">
+      <div class="label">Connected</div>
+      <div class="value" id="ch-count">0/20</div>
+    </div>
+    <div id="ch-grid" class="chain-grid"></div>
+  </div>
+
+  <!-- FLASH -->
+  <div id="tab-flash" class="tab-content">
+    <div class="card full">
+      <div class="label">Total Flash Capacity</div>
+      <div class="value green" id="fl-total">$0M</div>
+    </div>
+    <div class="card full">
+      <div class="label">Flash Deployed Today</div>
+      <div class="value" id="fl-deployed">$0</div>
+    </div>
+    <div id="fl-chains" class="flash-grid"></div>
+  </div>
+
+  <!-- PROPELLER -->
+  <div id="tab-propeller" class="tab-content">
+    <div class="card full">
+      <div class="label">Active Level</div>
+      <div class="value" id="pr-active">P1</div>
+    </div>
+    <div id="pr-grid" class="propeller-grid"></div>
+  </div>
+
+  <!-- VAULT -->
+  <div id="tab-vault" class="tab-content">
+    <div class="grid-2">
+      <div class="card">
+        <div class="label">Vault USDC Balance</div>
+        <div class="value green" id="vt-bal">$0.00</div>
+      </div>
+      <div class="card">
+        <div class="label">Recycler Balance</div>
+        <div class="value" id="vt-rec">$0.00</div>
+      </div>
+    </div>
+    <div class="card full">
+      <div class="label">Split: 70% Treasury / 20% Recycler / 10% Reserve</div>
+      <div class="split-bar">
+        <div class="split-treasury">70%</div>
+        <div class="split-recycler">20%</div>
+        <div class="split-reserve">10%</div>
+      </div>
+    </div>
+    <div class="card full controls">
+      <button onclick="reconcileTreasury()" class="btn-primary">Force Reconcile</button>
+    </div>
+  </div>
+
+  <!-- CONTRACTS -->
+  <div id="tab-contracts" class="tab-content">
+    <div id="ct-list" class="contract-list"></div>
+    <div class="card full">
+      <div class="label">Executor</div>
+      <div class="addr" id="ct-exec">—</div>
+    </div>
+    <div class="card full">
+      <div class="label">Treasury</div>
+      <div class="addr" id="ct-treas">—</div>
+    </div>
+  </div>
+
+  <!-- BUNDLES -->
+  <div id="tab-bundles" class="tab-content">
+    <div class="grid-3">
+      <div class="card">
+        <div class="label">Submitted</div>
+        <div class="value" id="bn-sub">0</div>
+      </div>
+      <div class="card">
+        <div class="label">Landed</div>
+        <div class="value green" id="bn-land">0</div>
+      </div>
+      <div class="card">
+        <div class="label">Landing Rate</div>
+        <div class="value" id="bn-rate">0%</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FTW — Flash To Wallet -->
+  <div id="tab-ftw" class="tab-content">
+    <div class="card full">
+      <h3>Withdraw USDC → Fiat</h3>
+      <div class="form-group">
+        <label>Amount (USDC)</label>
+        <input type="number" id="ftw-amount" placeholder="1000" min="1" step="1">
+      </div>
+      <div class="form-group">
+        <label>Network</label>
+        <select id="ftw-network">
+          <option value="wave">Wave Mobile Money</option>
+          <option value="afrimoney">Afrimoney</option>
+          <option value="qmoney">QMoney</option>
+          <option value="bank">Bank Transfer (GMD)</option>
+          <option value="international">International Wire</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Phone / Account Number</label>
+        <input type="text" id="ftw-phone" placeholder="+220XXXXXXX">
+      </div>
+      <div class="form-group">
+        <label>Beneficiary Name</label>
+        <input type="text" id="ftw-name" placeholder="Bun Omar SECKA">
+      </div>
+      <div id="ftw-quote" class="quote-box hidden"></div>
+      <div class="controls">
+        <button onclick="getQuote()" class="btn-primary">Get Quote</button>
+        <button onclick="withdraw()" class="btn-success" id="ftw-submit" disabled>Withdraw</button>
+      </div>
+      <div id="ftw-result" class="result-box hidden"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+let state = {}
+const ws  = new WebSocket(`ws://${location.host}`)
+
+ws.onmessage = e => {
+  state = JSON.parse(e.data)
+  update()
+}
+
+ws.onopen    = () => document.getElementById('status').textContent = 'LIVE'
+ws.onclose   = () => document.getElementById('status').textContent = 'DISCONNECTED'
+
+function fmt(n) {
+  if (!n) return '$0.00'
+  if (n >= 1e12) return '$' + (n/1e12).toFixed(3) + 'T'
+  if (n >= 1e9)  return '$' + (n/1e9).toFixed(3) + 'B'
+  if (n >= 1e6)  return '$' + (n/1e6).toFixed(3) + 'M'
+  if (n >= 1e3)  return '$' + (n/1e3).toFixed(2) + 'K'
+  return '$' + n.toFixed(2)
+}
+
+function fmtUptime(s) {
+  const h = Math.floor(s/3600), m = Math.floor((s%3600)/60), sec = s%60
+  return `up: ${h}h ${m}m ${sec}s`
+}
+
+function update() {
+  if (!state || state.booting) return
+  document.getElementById('uptime').textContent = fmtUptime(state.uptime || 0)
+
+  // Overview
+  document.getElementById('ov-rev').textContent     = fmt(state.revToday)
+  document.getElementById('ov-total').textContent   = fmt(state.revTotal)
+  document.getElementById('ov-vault').textContent   = fmt(state.vaultBalance)
+  document.getElementById('ov-swaps').textContent   = (state.swapsToday || 0).toLocaleString()
+  document.getElementById('ov-natural').textContent = (state.naturalToday || 0).toLocaleString()
+  document.getElementById('ov-prop').textContent    = state.propeller || 'P1'
+  const prog = state.progress || 0
+  document.getElementById('ov-progress').style.width = prog + '%'
+  document.getElementById('ov-progress-text').textContent =
+    prog.toFixed(2) + '% of ' + fmt(state.dailyTarget) + ' daily target'
+
+  // Executor
+  document.getElementById('ex-gas').textContent   = (state.gasPrice || 0).toFixed(1) + ' gwei'
+  document.getElementById('ex-gasok').textContent = state.gasOK ? '✓ ACTIVE' : '⚠ PAUSED'
+  document.getElementById('ex-gasok').className   = 'value ' + (state.gasOK ? 'green' : 'red')
+  const succ = state.successToday || 0, fail = state.failToday || 0, tot = succ + fail
+  document.getElementById('ex-exec').textContent  = (state.execToday || 0).toLocaleString()
+  document.getElementById('ex-rate').textContent  = tot > 0 ? Math.round(succ/tot*100) + '%' : '0%'
+  document.getElementById('ex-speed').textContent = (state.execSpeed || 0).toFixed(1) + 'ms'
+  document.getElementById('ex-peak').textContent  = fmt(state.peakSwap)
+  document.getElementById('ex-avg').textContent   = fmt(state.avgSwap)
+
+  // Amplifier
+  document.getElementById('amp-blended').textContent =
+    ((state.blendedRate || 0) * 100).toFixed(4) + '%'
+  const ampDiv = document.getElementById('amp-layers')
+  if (state.ampLayers && ampDiv.children.length === 0) {
+    ampDiv.innerHTML = state.ampLayers.map(l => `
+      <div class="layer-card">
+        <div class="layer-id">L${l.id}</div>
+        <div class="layer-name">${l.name}</div>
+        <div class="layer-rate">${l.pct}</div>
+        <div class="layer-usd">${fmt(l.usd)}</div>
+      </div>
+    `).join('')
+  }
+
+  // Chains
+  document.getElementById('ch-count').textContent = (state.chainCount || 0) + '/20'
+  const chDiv = document.getElementById('ch-grid')
+  if (state.chainStates && chDiv.children.length === 0) {
+    chDiv.innerHTML = Object.entries(state.chainStates).map(([name, ok]) => `
+      <div class="chain-card ${ok ? 'ok' : 'err'}">
+        <span>${name}</span>
+        <span>${ok ? '✓' : '✗'}</span>
+      </div>
+    `).join('')
+  } else if (state.chainStates) {
+    Object.entries(state.chainStates).forEach(([name, ok], i) => {
+      if (chDiv.children[i]) chDiv.children[i].className = `chain-card ${ok ? 'ok' : 'err'}`
+    })
+  }
+
+  // Flash
+  document.getElementById('fl-total').textContent    = fmt(state.flashCap)
+  document.getElementById('fl-deployed').textContent = fmt(state.flashDeployed)
+  const flDiv = document.getElementById('fl-chains')
+  if (state.flashPerChain && flDiv.children.length === 0) {
+    flDiv.innerHTML = Object.entries(state.flashPerChain).map(([name, f]) => `
+      <div class="flash-card">
+        <div class="flash-chain">${name}</div>
+        <div class="flash-bal">${fmt(f.balancer)} Balancer</div>
+        <div class="flash-aave">${fmt(f.aave)} Aave</div>
+        <div class="flash-total green">${fmt(f.total)} total</div>
+      </div>
+    `).join('')
+  }
+
+  // Propeller
+  document.getElementById('pr-active').textContent = state.propeller || 'P1'
+  const prDiv = document.getElementById('pr-grid')
+  if (state.propellerStats && prDiv.children.length === 0) {
+    prDiv.innerHTML = state.propellerStats.map(p => `
+      <div class="prop-card ${state.propeller === p.level ? 'active' : ''}"
+           onclick="setLevel('${p.level}')">
+        <div class="prop-level">${p.level}</div>
+        <div class="prop-label">${p.label}</div>
+        <div class="prop-chains">${p.chains} chains</div>
+      </div>
+    `).join('')
+  } else if (state.propellerStats) {
+    Array.from(prDiv.children).forEach((el, i) => {
+      el.className = `prop-card ${state.propeller === state.propellerStats[i]?.level ? 'active' : ''}`
+    })
+  }
+
+  // Vault
+  document.getElementById('vt-bal').textContent = fmt(state.vaultBalance)
+  document.getElementById('vt-rec').textContent = fmt(state.recyclerBal)
+
+  // Contracts
+  const ctDiv = document.getElementById('ct-list')
+  if (state.contractAddrs && ctDiv.children.length === 0) {
+    ctDiv.innerHTML = Object.entries(state.contractAddrs).map(([k, v]) => `
+      <div class="contract-item">
+        <span class="ct-key">${k}</span>
+        <span class="ct-val ${v ? 'green' : 'dim'}">${v || 'not deployed'}</span>
+      </div>
+    `).join('')
+  }
+  document.getElementById('ct-exec').textContent  = state.executor  || '—'
+  document.getElementById('ct-treas').textContent = state.treasury  || '—'
+
+  // Bundles
+  const bs = state.bundleStats || {}
+  document.getElementById('bn-sub').textContent  = bs.submitted  || 0
+  document.getElementById('bn-land').textContent = bs.landed     || 0
+  document.getElementById('bn-rate').textContent = bs.landingRate || '0%'
+}
+
+// Tab switching
+function showTab(id) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'))
+  document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'))
+  document.getElementById('tab-' + id)?.classList.add('active')
+  event.target.classList.add('active')
+}
+
+// Actions
+async function pauseExec() {
+  await fetch('/api/executor/pause', { method: 'POST' })
+}
+async function resumeExec() {
+  await fetch('/api/executor/resume', { method: 'POST' })
+}
+async function setLevel(level) {
+  await fetch('/api/propeller', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ level }),
+  })
+}
+async function reconcileTreasury() {
+  await fetch('/api/treasury/reconcile', { method: 'POST' })
+}
+
+// FTW
+async function getQuote() {
+  const amount  = parseFloat(document.getElementById('ftw-amount').value)
+  const network = document.getElementById('ftw-network').value
+  if (!amount) return
+  const r = await fetch('/api/ftw/quote', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ amount, network }),
+  })
+  const d = await r.json()
+  const qb = document.getElementById('ftw-quote')
+  qb.innerHTML = `Gross: $${d.gross} | Fee: $${d.fee} (${d.rate}) | Net: $${d.net} ${network.toUpperCase()}`
+  qb.classList.remove('hidden')
+  document.getElementById('ftw-submit').disabled = false
+}
+
+async function withdraw() {
+  const amount      = parseFloat(document.getElementById('ftw-amount').value)
+  const network     = document.getElementById('ftw-network').value
+  const phone       = document.getElementById('ftw-phone').value
+  const accountName = document.getElementById('ftw-name').value
+  const rb = document.getElementById('ftw-result')
+  rb.classList.add('hidden')
+  try {
+    const r = await fetch('/api/ftw/withdraw', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ amount, network, phone, accountName }),
+    })
+    const d = await r.json()
+    rb.innerHTML = d.ok
+      ? `✓ Withdrawal initiated | Net: $${d.net} | Ref: ${d.reference}`
+      : `✗ Error: ${d.error}`
+    rb.className = `result-box ${d.ok ? 'ok' : 'err'}`
+  } catch (e) {
+    rb.innerHTML = `✗ ${e.message}`
+    rb.className = 'result-box err'
+  }
+  rb.classList.remove('hidden')
+}
+</script>
+</body>
+</html>
